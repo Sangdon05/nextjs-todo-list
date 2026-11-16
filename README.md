@@ -125,3 +125,10 @@ npm run dev
 ```
 
 [http://localhost:3000](http://localhost:3000)에서 확인합니다. 첫 접속 시 로그인 페이지로 리다이렉트되며, 회원가입 후 할일을 등록할 수 있습니다.
+
+# 시연 영상 
+
+
+
+https://github.com/user-attachments/assets/94766ff7-3388-491a-9509-0ca044b6c0b2
+
