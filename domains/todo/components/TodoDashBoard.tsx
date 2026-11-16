@@ -59,10 +59,7 @@ export default function TodoDashBoard({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between border-b pb-3">
-        <Link href="/todo/pin">
-          <Button variant="outline">찜한 작업</Button>
-        </Link>
+      <div className="flex justify-end border-b pb-3">
         <Link href="/todo/new">
           <Button>할일 등록하기</Button>
         </Link>

@@ -2,8 +2,10 @@ import SignOutButton from '@/domains/auth/components/SignOutButton';
 import { getCurrentUser } from '@/domains/auth/queries/getCurrentUser.query';
 import { Button } from '@/shared/components/ui/button';
 import Link from 'next/link';
+import { connection } from 'next/server';
 
 export default async function Header(): Promise<React.JSX.Element> {
+  await connection();
   const { user } = await getCurrentUser();
 
   return (
