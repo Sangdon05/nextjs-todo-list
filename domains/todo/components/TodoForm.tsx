@@ -6,7 +6,7 @@ import { Input } from '@/shared/components/ui/input';
 import { INITIAL_ACTION_STATE } from '@/shared/types/action.types';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useActionState, useEffect, useState } from 'react';
-import { FiAlertCircle } from 'react-icons/fi';
+import { FiAlertCircle, FiLoader } from 'react-icons/fi';
 import { addTodoAction } from '../actions/todo.action';
 
 interface FormState {
@@ -30,72 +30,67 @@ export default function TodoForm() {
   const [form, setForm] = useState(initialState);
   const onChange = (e: ChangeEvent<HTMLInputElement> | string) => {
     setForm((prev) => {
-      let key, value;
-      if (typeof e === 'string') {
-        key = 'content';
-        value = e;
-      } else {
-        key = e.target.name;
-        value = e.target.value;
-      }
-
+      const [key, value] =
+        typeof e === 'string'
+          ? (['content', e] as const)
+          : ([e.target.name, e.target.value] as const);
       return { ...prev, [key]: value };
     });
   };
 
   useEffect(() => {
     if (state.success) {
-      // 등록이 완료되면 할일 목록으로 이동
       router.replace('/');
       router.refresh();
     }
   }, [state.success, router]);
+
   return (
     <div>
       {state.message && !state.success && (
-        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-xs font-medium text-red-600">
+        <div className="border-destructive/30 bg-destructive/10 text-destructive mb-6 flex items-center gap-2 rounded-2xl border p-3.5 text-xs font-medium">
           <FiAlertCircle className="h-4 w-4 shrink-0" />
           <span>{state.message}</span>
         </div>
       )}
       <form action={formAction} noValidate autoComplete="off">
         <input type="hidden" name="content" value={form.content} />
-        <div className="mb-2 flex items-center">
-          <label className="basis-30">할일</label>
-          <div className="grow">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-2 md:grid-cols-[6rem_1fr]">
+          <label className="text-sm font-medium md:leading-9">할일</label>
+          <div>
             <Input
               type="text"
               name="title"
               value={form.title}
               onChange={onChange}
-              className="grow"
               placeholder="할일을 입력하세요..."
             />
             {state.errors?.title && (
-              <div className="mb-4">
-                <FiAlertCircle />
+              <p className="text-destructive mt-1.5 flex items-center gap-1.5 text-xs">
+                <FiAlertCircle className="h-3.5 w-3.5 shrink-0" />
                 {state.errors.title}
-              </div>
+              </p>
             )}
           </div>
-        </div>
 
-        <div className="flex">
-          <label className="basis-30">내용</label>
-          <div className="grow">
+          <label className="text-sm font-medium">내용</label>
+          <div>
             <TiptabEditor content={form.content} onChange={onChange} />
             {state.errors?.content && (
-              <div className="mb-4">
-                <FiAlertCircle />
+              <p className="text-destructive mt-1.5 flex items-center gap-1.5 text-xs">
+                <FiAlertCircle className="h-3.5 w-3.5 shrink-0" />
                 {state.errors.content}
-              </div>
+              </p>
             )}
           </div>
         </div>
 
-        <Button type="submit" disabled={isPending}>
-          등록하기
-        </Button>
+        <div className="mt-6 flex justify-end">
+          <Button type="submit" disabled={isPending}>
+            {isPending && <FiLoader className="h-4 w-4 animate-spin" />}
+            등록하기
+          </Button>
+        </div>
       </form>
     </div>
   );

@@ -21,7 +21,6 @@ export async function addTodoAction(
     };
   }
 
-  // 필드별 유효성 검사
   const errors = validateTodoInput({ title, content });
 
   if (Object.keys(errors).length > 0) {
@@ -33,7 +32,6 @@ export async function addTodoAction(
 
   const supabase = createServerClient();
 
-  // 할일 등록
   const { data: todo, error: todoError } = await supabase
     .from('todos')
     .insert({
@@ -91,4 +89,6 @@ export async function changeTodoStatus(
         `할일을 찾을 수 없거나 수정 권한이 없습니다. - ID: ${id}`,
     );
   }
+
+  revalidatePath('/', 'page');
 }

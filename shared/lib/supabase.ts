@@ -37,4 +37,6 @@ export function createServerClient(): SupabaseClient {
   });
 }
 
-export const supabse = createBrowserClient(supabaseURL, supabasePublishableKey);
+export function createBrowserSupabase(): SupabaseClient {
+  return createBrowserClient(supabaseURL, supabasePublishableKey);
+}

@@ -1,13 +1,30 @@
 'use client';
 
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu';
 import Link from 'next/link';
+import { FiMoreVertical } from 'react-icons/fi';
 import type { Todo, TodoStatus } from '../types/todo.types';
 
 export const TODO_STATUS_MAP: Record<TodoStatus, string> = {
   READY: '준비중',
   PROGRESS: '진행중',
   DONE: '완료',
+} as const;
+
+export const TODO_STATUS_VARIANT: Record<
+  TodoStatus,
+  'outline' | 'secondary' | 'default'
+> = {
+  READY: 'outline',
+  PROGRESS: 'secondary',
+  DONE: 'default',
 } as const;
 
 const STATUS_ENTRIES = Object.entries(TODO_STATUS_MAP) as [
@@ -18,7 +35,6 @@ const STATUS_ENTRIES = Object.entries(TODO_STATUS_MAP) as [
 interface TodoItemsProps {
   status?: TodoStatus;
   items?: Todo[];
-  pinnedItem?: boolean;
   onClick?: (id: string, status: TodoStatus) => void;
 }
 
@@ -41,7 +57,7 @@ export default function TodoItems({
   }
 
   return (
-    <div>
+    <div className="space-y-2">
       {filteredItems.map((item) => (
         <TodoItem key={item.id} item={item} onClickAction={onClick} />
       ))}
@@ -53,36 +69,36 @@ export function TodoItem({ item, onClickAction }: TodoItemProps) {
   const { id, status, title } = item;
 
   return (
-    <div className="mb-2 rounded-2xl border p-4">
-      <div className="mb-3 flex items-center justify-between gap-2 font-medium">
-        <div className="flex items-center gap-1.5 overflow-hidden">
-          <span className="shrink-0 text-gray-500">
-            [{TODO_STATUS_MAP[status]}]
-          </span>
-          <Link href={`/todo/${id}/view`} className="truncate hover:underline">
-            {title}
-          </Link>
-        </div>
-
-        <div className="h-5 w-5 shrink-0 animate-pulse rounded-full bg-gray-200" />
+    <div className="flex items-center justify-between gap-2 rounded-2xl border p-3">
+      <div className="flex min-w-0 items-center gap-2">
+        <Badge variant={TODO_STATUS_VARIANT[status]}>
+          {TODO_STATUS_MAP[status]}
+        </Badge>
+        <Link href={`/todo/${id}/view`} className="truncate hover:underline">
+          {title}
+        </Link>
       </div>
 
-      <div className="flex gap-2">
-        {STATUS_ENTRIES.map(([s, label]) => {
-          const isCurrentStatus = s === status;
-          return (
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
             <Button
-              key={`${id}_${s}`}
-              size="sm"
-              variant={isCurrentStatus ? 'default' : 'outline'}
-              disabled={isCurrentStatus}
-              onClick={() => onClickAction?.(id, s)}
-            >
-              {label}
-            </Button>
-          );
-        })}
-      </div>
+              variant="ghost"
+              size="icon-sm"
+              aria-label="상태 변경 메뉴"
+            />
+          }
+        >
+          <FiMoreVertical className="h-4 w-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {STATUS_ENTRIES.filter(([s]) => s !== status).map(([s, label]) => (
+            <DropdownMenuItem key={s} onClick={() => onClickAction?.(id, s)}>
+              {label}로 변경
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

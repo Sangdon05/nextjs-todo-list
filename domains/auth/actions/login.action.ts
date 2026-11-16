@@ -41,7 +41,7 @@ export async function signInAction(
     .eq('id', authData.user.id)
     .single();
 
-  if (!profile || profile.deletedAt) {
+  if (!profile || profile.deleted_at) {
     await supabase.auth.signOut();
     return {
       success: false,
@@ -52,6 +52,6 @@ export async function signInAction(
   revalidatePath('/', 'layout');
   return {
     success: true,
-    message: '로그인 완로하였습니다.',
+    message: '로그인에 성공하였습니다.',
   };
 }

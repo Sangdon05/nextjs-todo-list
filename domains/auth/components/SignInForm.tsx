@@ -42,7 +42,7 @@ export default function SignInForm(): React.JSX.Element {
   return (
     <div>
       {state.message && !state.success && (
-        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-xs font-medium text-red-600">
+        <div className="border-destructive/30 bg-destructive/10 text-destructive mb-6 flex items-center gap-2 rounded-2xl border p-3.5 text-xs font-medium">
           <FiAlertCircle className="h-4 w-4 shrink-0" />
           <span>{state.message}</span>
         </div>
@@ -59,19 +59,19 @@ export default function SignInForm(): React.JSX.Element {
           />
         </div>
         {state.errors?.email && (
-          <div className="mb-4">
-            <FiAlertCircle />
+          <p className="text-destructive mt-1.5 mb-2 flex items-center gap-1.5 text-xs">
+            <FiAlertCircle className="h-3.5 w-3.5 shrink-0" />
             {state.errors.email}
-          </div>
+          </p>
         )}
         <div className="mb-2">
           <Input type="password" name="password" placeholder="비밀번호" />
         </div>
         {state.errors?.password && (
-          <div className="mb-4">
-            <FiAlertCircle />
+          <p className="text-destructive mt-1.5 mb-4 flex items-center gap-1.5 text-xs">
+            <FiAlertCircle className="h-3.5 w-3.5 shrink-0" />
             {state.errors.password}
-          </div>
+          </p>
         )}
         <Button type="submit" disabled={isPending}>
           로그인
