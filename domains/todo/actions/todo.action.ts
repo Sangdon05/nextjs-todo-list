@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/domains/auth/queries/getCurrentUser.query';
 import { createServerClient } from '@/shared/lib/supabase';
 import { ActionState } from '@/shared/types/action.types';
 import { revalidatePath } from 'next/cache';
+import { redirect, RedirectType } from 'next/navigation';
 import type { TodoStatus } from '../types/todo.types';
 import { validateTodoInput } from '../utils/todoValidation';
 
@@ -32,17 +33,13 @@ export async function addTodoAction(
 
   const supabase = createServerClient();
 
-  const { data: todo, error: todoError } = await supabase
-    .from('todos')
-    .insert({
-      status: 'READY',
-      title,
-      content,
-      user_id: user.id,
-      user_name: user.name,
-    })
-    .select('id')
-    .single();
+  const { error: todoError } = await supabase.from('todos').insert({
+    status: 'READY',
+    title,
+    content,
+    user_id: user.id,
+    user_name: user.name,
+  });
 
   if (todoError) {
     return {
@@ -52,12 +49,8 @@ export async function addTodoAction(
   }
 
   revalidatePath('/', 'page');
-
-  return {
-    success: true,
-    message: '할일이 등록되었습니다.',
-    data: { id: todo.id },
-  };
+  // 클라이언트 state 기반 리다이렉트는 Activity 복원 시 재실행되므로 서버에서 처리
+  redirect('/', RedirectType.replace);
 }
 
 export async function changeTodoStatus(

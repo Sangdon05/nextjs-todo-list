@@ -4,8 +4,7 @@ import TiptabEditor from '@/shared/components/TiptabEditor';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { INITIAL_ACTION_STATE } from '@/shared/types/action.types';
-import { useRouter } from 'next/navigation';
-import { ChangeEvent, useActionState, useEffect, useState } from 'react';
+import { ChangeEvent, useActionState, useLayoutEffect, useState } from 'react';
 import { FiAlertCircle, FiLoader } from 'react-icons/fi';
 import { addTodoAction } from '../actions/todo.action';
 
@@ -20,8 +19,19 @@ const initialState: FormState = {
 };
 
 export default function TodoForm() {
-  const router = useRouter();
+  const [formKey, setFormKey] = useState(0);
 
+  // Activity로 숨겨질 때 폼을 리마운트해 입력값·액션 결과를 초기화
+  useLayoutEffect(() => {
+    return () => {
+      setFormKey((key) => key + 1);
+    };
+  }, []);
+
+  return <TodoFormContent key={formKey} />;
+}
+
+function TodoFormContent() {
   const [state, formAction, isPending] = useActionState(
     addTodoAction,
     INITIAL_ACTION_STATE,
@@ -38,16 +48,9 @@ export default function TodoForm() {
     });
   };
 
-  useEffect(() => {
-    if (state.success) {
-      router.replace('/');
-      router.refresh();
-    }
-  }, [state.success, router]);
-
   return (
     <div>
-      {state.message && !state.success && (
+      {state.message && (
         <div className="border-destructive/30 bg-destructive/10 text-destructive mb-6 flex items-center gap-2 rounded-2xl border p-3.5 text-xs font-medium">
           <FiAlertCircle className="h-4 w-4 shrink-0" />
           <span>{state.message}</span>
